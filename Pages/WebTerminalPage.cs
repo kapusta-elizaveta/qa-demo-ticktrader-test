@@ -25,6 +25,6 @@ namespace Pages
         public static UIElement TradingTab => new UIElement(FindBy.Xpath, "//ul[@id='menu']//a[@href='/trading']");
         public static UIElement OpenningListLanguage => new UIElement(FindBy.Id, "list-language_listbox");
         public static UIElement OpeningLanguageDropDown(String lanCode) => new UIElement(FindBy.Xpath, $"//a[@data-code='{lanCode}']");
-        public static UIElement TradingViewFrame => new UIElement(FindBy.Xpath, "//iframe[@id='tradingview_ea6bf']");
+        public static UIElement TradingViewFrame => new UIElement(FindBy.Xpath, "//div[@id='trading-chart']/iframe");
     }
 }

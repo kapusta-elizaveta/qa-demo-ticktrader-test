@@ -25,16 +25,16 @@ namespace Test
 
         [Test]
         [Order(1)]
-        public void DropDownLang()
+        public void DropDownLang_Test()
         {
             Browser.Current.WaitForElementPresent(WebTerminalPage.SignInIcon, 3);
             WebTerminalPage.ControlLanguageIcon.JsClick();
 
             Assert.Multiple(() =>
             {
-                Assert.True(WebTerminalPage.OpenningListLanguage.Enabled, "");
-                Assert.AreEqual("\r\n        "+ engCode + "ru\r\n        " + engLan + "\r\n    ", WebTerminalPage.OpeningLanguageDropDown(engCode).InnerText, "");
-                Assert.AreEqual($"\r\n        " + rusCode + "\r\n        " + rusLan+ "\r\n    ", WebTerminalPage.OpeningLanguageDropDown(rusCode).InnerText, "");
+                Assert.True(WebTerminalPage.OpenningListLanguage.Displayed, "Language dropdown isn't opened");
+                Assert.AreEqual($"\r\n        {engCode}\r\n        {engLan}\r\n    ", WebTerminalPage.OpeningLanguageDropDown(engCode).InnerText, "Field doesn't contains English code and name");
+                Assert.AreEqual($"\r\n        {rusCode}\r\n        {rusLan}\r\n    ", WebTerminalPage.OpeningLanguageDropDown(rusCode).InnerText, "Field doesn't contains Russian code and name");
 
             });
         }
@@ -57,12 +57,12 @@ namespace Test
             switch (currentLanguage)
             {
                 case "English":
-                    // WebTerminalPage.ControlLanguageIcon.JsClick();
+                    WebTerminalPage.ControlLanguageIcon.JsClick();
                     WebTerminalPage.OpeningLanguageDropDown(rusCode).Click();
                     CheckingLanguauge(rusLan);
                     break;
                 case "Русский":
-                    // WebTerminalPage.ControlLanguageIcon.JsClick();
+                    WebTerminalPage.ControlLanguageIcon.JsClick();
                     WebTerminalPage.OpeningLanguageDropDown(engCode).Click();
                     CheckingLanguauge(engLan);
                     break;
@@ -77,14 +77,12 @@ namespace Test
             Browser.Current.WaitForPageLoad();
             WebTerminalPage.ListSymbolsDropDown.JsClick();
             WebTerminalPage.SymbolsDropDown(symbol).Click();
-            Browser.Current.WaitForPageLoad();
-            Browser.Current.WaitForElementVisible(WebTerminalPage.TradingViewFrame);
-            Browser.Current.WrappedDriver.SwitchTo().Frame("tradingview_ea6bf");
-
-            var srcTradingViewFrame = WebTerminalPage.TradingViewFrame.GetAttribute("src");
-            var result = srcTradingViewFrame.Split('=').Last().Split('&')[0];
+            Browser.Current.Refresh();
             
-            Assert.AreEqual(symbol, result, "");
+            var srcTradingViewFrame = WebTerminalPage.TradingViewFrame.GetAttribute("src");
+            var updateSymbol =srcTradingViewFrame.Substring(102, 6);
+
+            Assert.AreEqual(symbol, updateSymbol, "LTCUSD isn't updated");
         }
 
         [Test]
@@ -96,7 +94,7 @@ namespace Test
 
             var currentWindow = Browser.Current.WrappedDriver.Url;
 
-            Assert.AreEqual("https://demo-ticktrader.free2ex.com/trading", currentWindow, "");
+            Assert.AreEqual("https://demo-ticktrader.free2ex.com/trading", currentWindow, "It isn't trading page");
         }
 
         public void CheckingLanguauge(string currentLanguage)
@@ -106,20 +104,20 @@ namespace Test
                 case "English":
                     Assert.Multiple(() =>
                     {
-                        Assert.True(WebTerminalPage.MarketWatchTab("Market Watch").Displayed, "");
-                        Assert.AreEqual("PLACE LIMIT ", WebTerminalPage.PlaceLimitTab.Text, "");
-                        Assert.AreEqual("EXCHANGE", WebTerminalPage.ExchangeTab.Text, "");
-                        Assert.AreEqual("Tutorial", WebTerminalPage.TutorialTab.Text, "");
+                        Assert.True(WebTerminalPage.MarketWatchTab("Market Watch").Displayed, "Field doesn't contains Market Watch name");
+                        Assert.AreEqual("PLACE LIMIT ", WebTerminalPage.PlaceLimitTab.Text, "Field doesn't contains PLACE LIMIT name");
+                        Assert.AreEqual("EXCHANGE", WebTerminalPage.ExchangeTab.Text, "Field doesn't contains EXCHANGE name");
+                        Assert.AreEqual("Tutorial", WebTerminalPage.TutorialTab.Text, "Field doesn't contains Tutorial name");
 
                     });
                     break;
                 case "Русский":
                     Assert.Multiple(() =>
                     {
-                        Assert.True(WebTerminalPage.MarketWatchTab("Обзор рынка").Displayed, "");
-                        Assert.AreEqual("РАЗМЕСТИТЬ LIMIT ", WebTerminalPage.PlaceLimitTab.Text, "");
-                        Assert.AreEqual("ОБМЕНЯТЬ", WebTerminalPage.ExchangeTab.Text, "");
-                        Assert.AreEqual("Обучение", WebTerminalPage.TutorialTab.Text, "");
+                        Assert.True(WebTerminalPage.MarketWatchTab("Обзор рынка").Displayed, "Field doesn't contains Обзор рынка name");
+                        Assert.AreEqual("РАЗМЕСТИТЬ LIMIT ", WebTerminalPage.PlaceLimitTab.Text, "Field doesn't contains РАЗМЕСТИТЬ LIMIT name");
+                        Assert.AreEqual("ОБМЕНЯТЬ", WebTerminalPage.ExchangeTab.Text, "Field doesn't contains ОБМЕНЯТЬ name");
+                        Assert.AreEqual("Обучение", WebTerminalPage.TutorialTab.Text, "Field doesn't contains Обучение name");
 
                     });
                     break;
