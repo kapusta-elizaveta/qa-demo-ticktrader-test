@@ -15,9 +15,7 @@ namespace WebCore.Elements
     {
         protected IWebElement Element;
         protected By Locator;
-        protected string Name;
-        private const int m_delay = 100;
-        
+
         public UIElement(FindBy type, string locator)
         {
             switch (type)
@@ -72,39 +70,7 @@ namespace WebCore.Elements
                 return Element.GetAttribute("innerText");
             }
         }
-
-        public string Value
-        {
-            get
-            {
-                Browser.Current.ScrollToElement(Locator);
-                Browser.Current.WaitForElementPresent(Locator);
-                Element = GetElement();
-                return Element.GetAttribute("value");
-            }
-        }
-
-        public bool Hidden
-        {
-            get
-            {
-                try
-                {
-                    Browser.Current.ScrollToElement(Locator);
-                    Browser.Current.WaitForElementPresent(Locator);
-                    if (Browser.FindElement(Locator).Displayed)
-                    {
-                        return FindParentWithAttribute("class", "form-item-offscreen") != null;
-                    }
-                }
-                catch (NoSuchElementException)
-                {
-
-                }
-                return true;
-            }
-        }
-
+        
         public string Text
         {
             get
@@ -137,10 +103,7 @@ namespace WebCore.Elements
         }
 
         public Point Location { get; }
-        
         public Size Size { get; }
-        
-        public string TagName { get; }
 
         public bool Displayed
         {
@@ -165,34 +128,7 @@ namespace WebCore.Elements
                 return false;
             }
         }
-
-        public int Width
-        {
-            get
-            {
-                Browser.Current.ScrollToElement(Locator);
-                Browser.Current.WaitForElementVisible(Locator);
-                Element = GetElement();
-                return Element.Size.Width;
-            }
-        }
-
-        public IWebElement WebElement
-        {
-            get
-            {
-                return GetElement();
-            }
-        }
-
-        public IWebElement GetParent
-        {
-            get
-            {
-                return Browser.FindElement(Locator).FindElement(By.XPath(".."));
-            }
-        }
-
+        
         public void SendKeys(string text)
         {
             try
@@ -207,35 +143,8 @@ namespace WebCore.Elements
                 Browser.Current.WaitForElementVisible(Locator);
                 Browser.FindElement(Locator).SendKeys(text);
             }
-            
         }
         
-        public void SendKeysWithoutScroll(string text)
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            Browser.FindElement(Locator).SendKeys(text);
-        }
-        
-        public void SendKeysWithDelay(string text, int delay = m_delay)
-        {
-            ScrollToElement();
-            Browser.Current.WaitForElementVisible(Locator);
-            var textChars = text.Split();
-            Browser.FindElement(Locator).Click();
-            foreach (var symbol in textChars)
-            {
-                Thread.Sleep(delay);
-                Browser.FindElement(Locator).SendKeys(symbol);
-            }
-        }
-
-        public void SendKeysWithJs(string text)
-        {
-            ScrollToElement();
-            Browser.Current.WaitForElementVisible(Locator);
-            var input = Browser.FindElement(Locator);
-            Browser.Current.ExecuteJS($"arguments[0].value='{text}';", input);
-        }
 
         public void Submit()
         {
@@ -245,43 +154,7 @@ namespace WebCore.Elements
             Browser.Current.WaitForPageLoad();
         }
 
-        public void Set(bool flag)
-        {
-            var webElement = Browser.Current.WaitForElementPresent(Locator); 
-            if ( webElement != null)
-            {
-                if (!webElement.Displayed)
-                {
-                    ScrollToElement();                    
-                }
-                
-                if (webElement.Selected != flag)
-                {
-                    webElement.Click();
-                }
-            }
-        }
-
-        public void SetDate(string date)
-        {
-            ScrollToElement();
-            Browser.Current.WaitForElementVisible(Locator);
-            Element = Browser.FindElement(Locator);
-            Element.Click();
-            if (Environment.OSVersion.Platform == PlatformID.Unix)
-            {
-                for (var i = 1; i < 15; i++)
-                {
-                    Element.SendKeys(Keys.Backspace);    
-                }
-            }
-            else
-            {
-                Element.SendKeys(Keys.Control + "a");
-            }
-            Element.SendKeys(date + Keys.Tab);
-        }
-        
+      
         public void Click()
         {
             try
@@ -300,59 +173,25 @@ namespace WebCore.Elements
             Browser.Current.WaitForPageLoad();
         }
 
-        public void ClickWithoutScroll()
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            Browser.FindElement(Locator).Click();
-        } 
-        public void ClickAndSendKeys(string text)
-        {
-            try
-            {
-                Click();
-                Browser.FindElement(Locator).SendKeys(text);
-            }
-            catch (NoSuchElementException)
-            {
-                Browser.Current.ScrollToElement(Locator);
-                Browser.ClickElement(Browser.FindElement(Locator));
-                Browser.FindElement(Locator).SendKeys(text);
-            }
-            catch (ElementNotVisibleException)
-            {
-                Browser.Current.ScrollToElement(Locator);
-                Browser.ClickElement(Browser.FindElement(Locator));
-                Browser.FindElement(Locator).SendKeys(text);
-            }
-            Browser.Current.WaitForPageLoad();
-        }
-
+       
         public string GetAttribute(string attributeName)
         {
             Browser.Current.WaitForElementPresent(Locator);
             Browser.Current.ScrollToElement(Locator);
             return Browser.FindElement(Locator).GetAttribute(attributeName);
         }
-        
-        public void SetAttribute(string attributeName, string value)
+
+        public string GetProperty(string propertyName)
         {
-            Browser.Current.WaitForElementPresent(Locator);
-            Browser.Current.ScrollToElement(Locator);
-            var executor = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
-            executor.ExecuteScript($"arguments[0].setAttribute('{attributeName}', '{value}');", Element = GetElement());
+            throw new NotImplementedException();
         }
 
         public string GetCssValue(string propertyName)
         {
-            Browser.Current.WaitForElementVisible(Locator);
-            return Browser.FindElement(Locator).GetCssValue(propertyName);
+            throw new NotImplementedException();
         }
 
-        public string GetProperty(string propertyName)
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            return Browser.FindElement(Locator).GetProperty(propertyName);
-        }
+        public string TagName { get; }
 
         public void Clear()
         {
@@ -360,54 +199,7 @@ namespace WebCore.Elements
             Browser.Current.WaitForElementVisible(Locator);
             Browser.FindElement(Locator).Clear();
         }
-
-        public void ClearAndSendKeys(string text)
-        {
-            ScrollToElement();
-            Browser.Current.WaitForElementVisible(Locator);
-            var webElement = Browser.FindElement(Locator);
-            webElement.Clear();
-            webElement.SendKeys(text);
-        }
-
-        public string GetText()
-        {
-            Browser.Current.ScrollToElement(Locator);
-            Browser.Current.WaitForElementVisible(Locator);
-            Element = GetElement();
-            return Element.Text;
-        }
-
-        public string GetValueWithJs()
-        {
-            Browser.Current.WaitForElementPresent(Locator);
-            Browser.Current.ScrollToElement(Locator);
-            var executor = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
-            var elementValue = (string)executor.ExecuteScript(
-                "return arguments[0].value",
-                GetElement());
-            return elementValue;
-        }
-
-        /*
-        public string GetValueWithJs()
-        {
-            var js = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
-            var elementValue = (string)js.ExecuteScript(
-                "return arguments[0].value",
-                Element = GetElement());
-            return elementValue;
-        }
-        */
-
-        public void DoubleClick()
-        {
-            Browser.Current.WaitForElementClickable(Locator);
-            Browser.Current.ScrollToElement(Locator);
-            new Actions(Browser.Current.WrappedDriver).DoubleClick(Browser.FindElement(Locator)).Perform();
-            Browser.Current.WaitForPageLoad();
-        }
-
+        
         public void JsClick()
         {
             Browser.Current.WaitForElementPresent(Locator);
@@ -415,70 +207,6 @@ namespace WebCore.Elements
             var executor = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
             executor.ExecuteScript("arguments[0].click();", GetElement());
             Browser.Current.WaitForPageLoad();
-        }
-        
-        public void JsClickWithoutScroll()
-        {
-            Browser.Current.WaitForElementPresent(Locator);
-            var executor = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
-            executor.ExecuteScript("arguments[0].click();", GetElement());
-            Browser.Current.WaitForPageLoad();
-        }
-
-        public void JsHighLighter()
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            var executor = (IJavaScriptExecutor)Browser.Current.WrappedDriver;
-            executor.ExecuteScript(@"arguments[0].style.cssText = ""border-width: 2px; border-style: solid; border-color: red"";", GetElement());
-        }
-
-        public void ContextActClick()
-        {
-            var act = new Actions(Browser.Current.WrappedDriver);
-            Browser.Current.WaitForElementVisible(Locator);
-            act.ContextClick(FindElement(Locator)).Build().Perform();
-        }
-
-        public void MoveToElement()
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            var action = new Actions(Browser.Current.WrappedDriver);
-            action.MoveToElement(Browser.FindElement(Locator)).Build().Perform();
-        }
-
-        public void MouseDown()
-        {
-            Browser.Current.WaitForElementVisible(Locator);
-            var action = new Actions(Browser.Current.WrappedDriver);
-            action.MoveToElement(Browser.FindElement(Locator)).Click().Build().Perform();
-        }
-
-        public void DragAndDrop(int offsetX, int offsetY)
-        {
-            Browser.Current.WaitForElementPresent(Locator);
-            Actions action = new Actions(Browser.Current.WrappedDriver);
-            action.DragAndDropToOffset(Browser.FindElement(Locator), offsetX, offsetY)
-                .Build()
-                .Perform();
-        }
-
-        public void DragAndDrop(UIElement element, int offsetX, int offsetY)
-        {
-            var targetElement = Browser.FindElement(element.GetLocator);
-            Browser.Current.WaitForElementPresent(Locator);
-            Actions action = new Actions(Browser.Current.WrappedDriver);
-            action.DragAndDrop(Browser.FindElement(Locator), targetElement).DragAndDropToOffset(Browser.FindElement(Locator), offsetX, offsetY)
-                .Build()
-                .Perform();
-        }
-
-        public void DragAndDrop(UIElement element)
-        {
-            Browser.Current.WaitForElementPresent(Locator);
-            var action = new Actions(Browser.Current.WrappedDriver);
-            action.DragAndDrop(Browser.FindElement(Locator), Browser.FindElement(element.GetLocator))
-                .Build()
-                .Perform();
         }
 
         public void ScrollToElement()
@@ -498,62 +226,15 @@ namespace WebCore.Elements
             return Browser.FindElement(Locator);
         }
 
-        public IWebElement GetChild(By by)
-        {
-            try
-            {
-                Browser.Current.ScrollToElement(Locator);
-                Browser.Current.WaitForElementVisible(Locator);
-                Element = GetElement();
-
-                return Element.FindElement(by);
-            }
-            catch (NoSuchElementException)
-            {
-                return null;
-            }
-        }
-
-        public List<IWebElement> FindElements()
-        {
-            try
-            {
-                Browser.Current.WaitForElementPresent(Locator, 5);
-            }
-            catch { }
-            return Browser.Current.WrappedDriver.FindElements(Locator).ToList();
-        }
-
         public IWebElement FindElement(By by)
         {
             return Browser.Current.WaitForElementPresent(Locator, 5);
             //return Browser.FindElement(Locator);
         }
 
-        public ReadOnlyCollection<IWebElement> FindElements(By by)
+        public ReadOnlyCollection<IWebElement> FindElements(By @by)
         {
-            Browser.Current.WaitForElementPresent(Locator);
-            return Browser.Current.WrappedDriver.FindElements(Locator);
-        }
-
-        public IWebElement FindParentWithAttribute(string attribute, string value)
-        {
-            try
-            {
-                return Browser.FindElement(Locator).FindElement(By.XPath($"./ancestor::*[contains(@{attribute}, '{value}')]"));
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public void WaitForElementHasValue(int waitSeconds = 10)
-        {
-            new WebDriverWait(Browser.Current.WrappedDriver, TimeSpan.FromSeconds(waitSeconds)).Until(condition =>
-            {
-                return GetValueWithJs() != string.Empty;
-            });
+            throw new NotImplementedException();
         }
     }
 }
