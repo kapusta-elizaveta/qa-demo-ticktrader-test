@@ -24,16 +24,11 @@ namespace WebCore
             chromeOptions.AddArguments("--no-sandbox");
             chromeOptions.AddArguments("--disable-extensions");
             chromeOptions.AddArguments("--disable-browser-side-navigation");
-          //  chromeOptions.AddArguments("--disable-notifications");
             chromeOptions.AddArguments("--disable-gpu");
             chromeOptions.AddArguments("--disable-web-security");
             chromeOptions.AddArguments("--window-size=1920,1080");
             chromeOptions.AddArguments("--no-proxy-server");
             chromeOptions.AddArguments("enable-automation");
-           // chromeOptions.AddArguments("--disable-geolocation");
-            // Test Option for Headless Chrome Option
-            //chromeOptions.AddArguments("--headless");
-            //
             chromeOptions.AddUserProfilePreference("clipboardRead", true);
             chromeOptions.AddUserProfilePreference("download.default_directory", Configurator.DownloadFolder);
             chromeOptions.AddUserProfilePreference("download.prompt_for_download", false);
